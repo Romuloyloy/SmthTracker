@@ -1,39 +1,47 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const schedule = require('node-schedule'); // For scheduling daily tasks
 
 const app = express();
 const PORT = 3000;
 
-// Middleware to serve static files
+// Middleware to serve static files and parse JSON
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve the homepage on `/`
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Data files
+const todayFile = path.join(__dirname, 'data', 'log.json'); // Tracks today's counts
+const historyFile = path.join(__dirname, 'data', 'daily_log.json'); // Stores daily records
 
-// Data file path
-const dataFile = path.join(__dirname, 'data', 'log.json');
-
-// Initialize log file
-if (!fs.existsSync(dataFile)) {
-    fs.writeFileSync(dataFile, JSON.stringify({ Friend1: 0, Friend2: 0, Friend3: 0, Friend4: 0 }));
+// Initialize files
+if (!fs.existsSync(todayFile)) {
+    fs.writeFileSync(todayFile, JSON.stringify({ Friend1: 0, Friend2: 0, Friend3: 0, Friend4: 0 }));
+}
+if (!fs.existsSync(historyFile)) {
+    fs.writeFileSync(historyFile, JSON.stringify([])); // Historical data as an array
 }
 
-// Load and save functions
-function readLog() {
-    return JSON.parse(fs.readFileSync(dataFile));
+// Helper functions
+function readTodayLog() {
+    return JSON.parse(fs.readFileSync(todayFile));
 }
 
-function writeLog(logData) {
-    fs.writeFileSync(dataFile, JSON.stringify(logData, null, 2));
+function writeTodayLog(data) {
+    fs.writeFileSync(todayFile, JSON.stringify(data, null, 2));
+}
+
+function readHistoryLog() {
+    return JSON.parse(fs.readFileSync(historyFile));
+}
+
+function writeHistoryLog(data) {
+    fs.writeFileSync(historyFile, JSON.stringify(data, null, 2));
 }
 
 // API Endpoints
 app.get('/api/log', (req, res) => {
-    res.json(readLog());
+    res.json(readTodayLog());
 });
 
 app.post('/api/log', (req, res) => {
@@ -42,19 +50,34 @@ app.post('/api/log', (req, res) => {
         return res.status(400).json({ error: 'Invalid data' });
     }
 
-    const logData = readLog();
+    const logData = readTodayLog();
     if (!(name in logData)) {
         return res.status(400).json({ error: 'Invalid friend name' });
     }
 
     logData[name] += delta;
     logData[name] = Math.max(0, logData[name]); // Ensure count is not negative
-    writeLog(logData);
+    writeTodayLog(logData);
 
     res.json(logData);
 });
 
-// Start Server
+// Scheduler to archive daily totals at midnight EET (Eastern European Time)
+schedule.scheduleJob({ hour: 0, minute: 0, tz: 'EET' }, () => {
+    const todayLog = readTodayLog();
+    const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    const historyLog = readHistoryLog();
+    historyLog.push({ date: timestamp, ...todayLog });
+    writeHistoryLog(historyLog);
+
+    // Reset today's log
+    writeTodayLog({ Friend1: 0, Friend2: 0, Friend3: 0, Friend4: 0 });
+
+    console.log(`[${timestamp}] Daily log archived and reset.`);
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
