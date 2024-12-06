@@ -62,6 +62,28 @@ app.post('/api/log', (req, res) => {
     res.json(logData);
 });
 
+app.get('/api/history', (req, res) => {
+    const historyLog = readHistoryLog();
+    res.json(historyLog);
+});
+
+// Manual "end of the day" trigger for debugging
+app.post('/api/debug/endofday', (req, res) => {
+    const todayLog = readTodayLog();
+    const timestamp = new Date().toISOString().split('T')[0];
+
+    // Archive the current day
+    const historyLog = readHistoryLog();
+    historyLog.push({ date: timestamp, ...todayLog });
+    writeHistoryLog(historyLog);
+
+    // Reset today's log
+    writeTodayLog({ Friend1: 0, Friend2: 0, Friend3: 0, Friend4: 0 });
+
+    console.log(`[DEBUG] End-of-day process triggered for ${timestamp}.`);
+    res.json({ message: `End-of-day triggered for ${timestamp}`, todayLog, historyLog });
+});
+
 // Scheduler to archive daily totals at midnight EET (Eastern European Time)
 schedule.scheduleJob({ hour: 0, minute: 0, tz: 'EET' }, () => {
     const todayLog = readTodayLog();

@@ -2,6 +2,8 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 20px;
+    background-color: #4e3629; /* Brownie background */
+    color: #f5deb3; /* Creamy yellow text */
 }
 
 h1 {
@@ -15,10 +17,11 @@ h1 {
 }
 
 .friend {
-    border: 1px solid #ccc;
+    border: 2px solid #d2b48c; /* Light tan border */
     padding: 10px;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #6f4e37; /* Coffee brown background */
+    color: #f5deb3; /* Creamy yellow text */
 }
 
 .friend h2 {
@@ -29,10 +32,86 @@ h1 {
     margin: 5px;
     padding: 10px 20px;
     font-size: 18px;
+    background-color: #d2b48c; /* Tan */
+    color: #4e3629; /* Dark brown text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.friend button:hover {
+    background-color: #c1a173; /* Slightly darker tan */
 }
 
 .friend .count {
     font-size: 24px;
     margin: 10px 0;
     font-weight: bold;
+}
+
+.calendar-container {
+    margin-top: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-header button {
+    background-color: #d2b48c; /* Tan */
+    color: #4e3629; /* Dark brown text */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.calendar-header span {
+    font-size: 16px;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for days of the week */
+    gap: 2px;
+}
+
+.calendar-day {
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    background-color: #6f4e37; /* Default brown */
+    display: inline-block;
+    line-height: 25px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-day[data-density="0"] {
+    background-color: #4e3629; /* Dark brown for no coffee */
+}
+
+.calendar-day[data-density="1"] {
+    background-color: #8b5e3c; /* Light brown */
+}
+
+.calendar-day[data-density="2"] {
+    background-color: #aa704e; /* Medium brown */
+}
+
+.calendar-day[data-density="3"] {
+    background-color: #d2b48c; /* Tan */
+}
+
+.calendar-day[data-density="4"] {
+    background-color: #f5deb3; /* Creamy yellow */
+}
+
+.calendar-day[data-density="5"] {
+    background-color: #fff3e0; /* Lighter cream */
 }

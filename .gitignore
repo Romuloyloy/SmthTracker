@@ -1,1 +1,5 @@
-data/
+# Ignore everything inside the data directory
+data/*
+
+# But don't ignore the directory itself
+!data/
