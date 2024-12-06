@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+#tracker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.friend {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.friend h2 {
+    margin: 0 0 10px;
+}
+
+.friend button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+}
+
+.friend .count {
+    font-size: 24px;
+    margin: 10px 0;
+    font-weight: bold;
+}
